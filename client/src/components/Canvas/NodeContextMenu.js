@@ -10,8 +10,8 @@ const NodeContextMenu = ({
   selectedNodeId,
 }) => {
   const handleAddChildNode = () => {
-    const x = xPos; // 자식 노드의 x 좌표를 부모 노드의 오른쪽으로 설정 (임의로 100px 이동)
-    const y = yPos;
+    const x = xPos + 50; // 자식 노드의 x 좌표를 부모 노드의 오른쪽으로 설정 (임의로 100px 이동)
+    const y = yPos + 50;
     createNode(x, y, selectedNodeId); // 선택된 노드에 자식 노드 생성
     onClose();
   };

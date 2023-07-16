@@ -24,7 +24,19 @@ const options = {
     color: "#000000",
   },
   physics: {
-    enabled: false,
+    enabled: true,
+    solver: "barnesHut",
+    barnesHut: {
+      centralGravity: -0.1,
+      springConstant: 1,
+      damping: 0.09,
+      avoidOverlap: 0.5,
+      maxVelocity: 5,
+      minVelocity: 0.5,
+    },
+  },
+  interaction: {
+    multiselect: true,
   },
   // configure: {
   //   enabled: true,
@@ -53,7 +65,7 @@ const MindMap = () => {
 
   const handleNodeContextMenu = ({ event, nodes }) => {
     event.preventDefault();
-    console.log(nodes);
+
     if (nodes.length > 0) {
       const xPos = event.clientX;
       const yPos = event.clientY;
@@ -95,7 +107,15 @@ const MindMap = () => {
   };
 
   const [state, setState] = useState(() => {
-    const rootNode = { id: 1, label: "Root", x: 0, y: 0 };
+    const rootNode = {
+      id: 1,
+      label: "Root",
+      x: 0,
+      y: 0,
+      physics: true,
+      fixed: true,
+      color: "#f5b252",
+    };
     return {
       counter: 1,
       graph: {

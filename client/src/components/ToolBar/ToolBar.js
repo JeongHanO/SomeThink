@@ -1,7 +1,6 @@
-import "./ToolBar.css"
+import "./ToolBar.css";
 
 function ToolBar() {
-
   const makeNode = () => {
     console.log("make node");
   };
@@ -23,7 +22,7 @@ function ToolBar() {
 
   return (
     <div className="toolbar">
-      <button className="create-node button"  onClick={makeNode}></button>
+      <button className="create-node button" onClick={makeNode}></button>
       <button className="create-text button" onClick={makeText}></button>
       <button className="create-image button" onClick={makeImage}></button>
       <button className="create-memo button" onClick={makePostit}></button>
