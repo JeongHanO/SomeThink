@@ -23,20 +23,25 @@ const options = {
         color: "#000000",
     },
     physics: {
-        enabled: true,
-        solver: "barnesHut",
-        barnesHut: {
-            centralGravity: -0.1,
-            springConstant: 1,
-            damping: 0.09,
-            avoidOverlap: 0.5,
-        },
-        maxVelocity: 5,
-        minVelocity: 0.5,
+        enabled: false,
+        // solver: "barnesHut",
+        // barnesHut: {
+        //     centralGravity: -0.1,
+        //     springConstant: 1,
+        //     damping: 0.09,
+        //     avoidOverlap: 0.5,
+        // },
+        // maxVelocity: 5,
+        // minVelocity: 0.5,
     },
     interaction: {
         multiselect: false,
     },
+    // 아직 안됨
+    // scaling: {
+    //     widthConstraint: true,
+    //     heightConstraint: true,
+    // },
 };
 
 const MindMap = () => {
@@ -48,33 +53,73 @@ const MindMap = () => {
     const [result, setResult] = useState("");
     const [selectedNodeLabels, setSelectedNodeLabels] = useState([]);
 
-    const createNode = (x, y, selectedNodeId) => {
+    const createNode = (selectedNodeId) => {
+        const id = state.counter + 1;
+        const selectedNode = state.graph.nodes.find(
+            (node) => node.id === selectedNodeId
+        );
+
+        if (!selectedNode) {
+            return;
+        }
+
+        const newNode = {
+            id,
+            label: `Node ${id}`,
+            x: selectedNode.x,
+            y: selectedNode.y + 100,
+            color: "#FBD85D",
+        };
+
+        const newEdge = { from: selectedNodeId, to: id };
+        console.log(newNode);
+
+        setState((prevState) => ({
+            ...prevState,
+            graph: {
+                nodes: [...prevState.graph.nodes, newNode],
+                edges: [...prevState.graph.edges, newEdge],
+            },
+            counter: id,
+            rootNode: prevState.rootNode,
+            events: prevState.events,
+        }));
+    };
+
+    const handleNodeDragEnd = (event) => {
+        const { nodes, pointer } = event;
+        if (!nodes || nodes.length === 0) {
+            return;
+        }
+        console.log(event);
+        const nodeId = nodes[0];
+        const { x, y } = pointer.canvas;
+
         setState((prevState) => {
-            const id = prevState.counter + 1;
+            const updatedNodes = prevState.graph.nodes.map((node) => {
+                if (node.id === nodeId) {
+                    return {
+                        ...node,
+                        x,
+                        y,
+                    };
+                }
+                return node;
+            });
 
             return {
+                ...prevState,
                 graph: {
-                    nodes: [
-                        ...prevState.graph.nodes,
-                        {
-                            id,
-                            label: `Node ${id}`,
-                            x,
-                            y,
-                            physics: true,
-                            color: "#FBD85D",
-                        },
-                    ],
-                    edges: [
-                        ...prevState.graph.edges,
-                        { from: selectedNodeId, to: id },
-                    ],
+                    ...prevState.graph,
+                    nodes: updatedNodes,
                 },
-                counter: id,
-                rootNode: prevState.rootNode,
-                events: prevState.events,
             };
         });
+    };
+
+    const handleCanvasDrag = (event) => {
+        // 캔버스 드래그가 진행 중일 때 호출되는 함수
+        // 캔버스가 이동되지만 좌표는 저장하지 않습니다.
     };
 
     const handleAddTextNode = (event) => {
@@ -316,9 +361,12 @@ const MindMap = () => {
             label: "Root",
             x: 0,
             y: 0,
-            physics: true,
             fixed: true,
             color: "#f5b252",
+            nodes: {
+                widthConstraint: true,
+                size: 50,
+            },
         };
         return {
             counter: 1,
@@ -349,6 +397,8 @@ const MindMap = () => {
                 options={options}
                 events={{
                     ...state.events,
+                    dragEnd: handleNodeDragEnd,
+                    drag: handleCanvasDrag,
                     click: handleAddTextNode,
                     oncontext: handleNodeContextMenu,
                 }}
@@ -365,10 +415,7 @@ const MindMap = () => {
                     }}
                 >
                     <NodeContextMenu
-                        xPos={contextMenuPos.xPos}
-                        yPos={contextMenuPos.yPos}
                         selectedNodeId={contextMenuPos.selectedNodeId}
-                        selectedNode={contextMenuPos.selectedNode}
                         onClose={closeContextMenu}
                         deleteNode={deleteNodes}
                         createNode={createNode}
