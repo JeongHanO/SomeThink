@@ -135,7 +135,7 @@ const MindMap = () => {
         if (!nodes || nodes.length === 0 || event.nodes[0] === 1) {
             return;
         }
-        console.log(event);
+
         const nodeId = nodes[0];
         const { x, y } = pointer.canvas;
 
@@ -144,27 +144,6 @@ const MindMap = () => {
             `Node ${nodeId}`,
             JSON.stringify({ ...JSON.parse(movedNode), x: x, y: y })
         );
-
-        // setState((prevState) => {
-        //     const updatedNodes = prevState.graph.nodes.map((node) => {
-        //         if (node.id === nodeId) {
-        //             return {
-        //                 ...node,
-        //                 x,
-        //                 y,
-        //             };
-        //         }
-        //         return node;
-        //     });
-
-        //     return {
-        //         ...prevState,
-        //         graph: {
-        //             ...prevState.graph,
-        //             nodes: updatedNodes,
-        //         },
-        //     };
-        // });
     };
 
     const handleCanvasDrag = (event) => {
