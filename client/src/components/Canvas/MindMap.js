@@ -65,7 +65,7 @@ const MindMap = () => {
 
     useEffect(() => {
         const ydoc = new Y.Doc();
-        const provider = new WebsocketProvider("ws://localhost:1234", "T", ydoc);
+        const provider = new WebsocketProvider("ws://localhost:1234", "Tes", ydoc);
         const ymap = ydoc.getMap("MindMap");
         ymap.set("Node 1", JSON.stringify(rootNode));
         ymap.set("Counter", 2);
@@ -139,26 +139,32 @@ const MindMap = () => {
         const nodeId = nodes[0];
         const { x, y } = pointer.canvas;
 
-        setState((prevState) => {
-            const updatedNodes = prevState.graph.nodes.map((node) => {
-                if (node.id === nodeId) {
-                    return {
-                        ...node,
-                        x,
-                        y,
-                    };
-                }
-                return node;
-            });
+        const movedNode = ymapRef.current.get(`Node ${nodeId}`);
+        ymapRef.current.set(
+            `Node ${nodeId}`,
+            JSON.stringify({ ...JSON.parse(movedNode), x: x, y: y })
+        );
 
-            return {
-                ...prevState,
-                graph: {
-                    ...prevState.graph,
-                    nodes: updatedNodes,
-                },
-            };
-        });
+        // setState((prevState) => {
+        //     const updatedNodes = prevState.graph.nodes.map((node) => {
+        //         if (node.id === nodeId) {
+        //             return {
+        //                 ...node,
+        //                 x,
+        //                 y,
+        //             };
+        //         }
+        //         return node;
+        //     });
+
+        //     return {
+        //         ...prevState,
+        //         graph: {
+        //             ...prevState.graph,
+        //             nodes: updatedNodes,
+        //         },
+        //     };
+        // });
     };
 
     const handleCanvasDrag = (event) => {
