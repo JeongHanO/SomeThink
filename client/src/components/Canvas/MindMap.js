@@ -98,7 +98,7 @@ const MindMap = () => {
 
     useEffect(() => {
         ydocRef.current = new Y.Doc();
-        const provider = new WebsocketProvider("ws://localhost:1234", "1123123123123123", ydocRef.current);
+        const provider = new WebsocketProvider("ws://localhost:1234", "room01", ydocRef.current);
         ymapRef.current = ydocRef.current.getMap("MindMap");
         ymapRef.current.set("Node 1", JSON.stringify(rootNode));
         ymapRef.current.set("Counter", 2);
