@@ -695,7 +695,7 @@ const MindMap = ({
 
     const nx = [100, -100, -100, 100];
     const ny = [100, 100, -100, -100];
-    //sdf
+
     const createNode = (selectedNodeId) => {
         if (!selectedNodeId) {
             setInfoMessage("노드를 선택한 후에 버튼을 눌러 자식 노드를 추가하세요!");
