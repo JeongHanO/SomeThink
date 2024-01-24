@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Slide } from "@mui/material";
 
 import "./HomePage.css";
-import BackgroundCircles from "../Login/BackGroundCircles";
+import BackgroundCircles from "../BackGround/BackGroundCircles";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;

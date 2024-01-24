@@ -1,4 +1,4 @@
-import BackgroundCircles from "../Login/BackGroundCircles";
+import BackgroundCircles from "../BackGround/BackGroundCircles";
 import LoginForm from "../Login/LoginForm";
 
 import "./HomePage.css";
