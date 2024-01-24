@@ -12,6 +12,7 @@ import "./Fonts/Font.css";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./components/Page/HomePage";
 import SessionPage from "./components/Page/SessionPage";
+import LoginPage from "./components/Page/LoginPage";
 
 const APPLICATION_SERVER_URL =
     process.env.NODE_ENV === "production" ? "" : "https://somethink.online/";
@@ -355,6 +356,7 @@ class App extends Component {
                             />
                         }
                     />
+                    <Route exact path="/login" element={<LoginPage />} />
                 </Routes>
             </Router>
         );
