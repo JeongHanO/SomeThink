@@ -178,7 +178,6 @@ class App extends Component {
         });
 
         // --- 2) Init a session ---
-        document.body.style.backgroundColor = "white";
         this.setState(
             {
                 session: this.OV.initSession(),
@@ -267,7 +266,6 @@ class App extends Component {
         sessionStorage.removeItem("sessionId");
         sessionStorage.removeItem("userName");
         const mySession = this.state.session;
-        document.body.style.backgroundColor = "#fbd85d";
         if (mySession) {
             mySession.disconnect();
         }
