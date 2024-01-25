@@ -1293,7 +1293,6 @@ const MindMap = ({
                     setIsImageSearchVisible={setIsImageSearchVisible}
                     isMarkdownVisible={isMarkdownVisible}
                     setIsMarkdownVisible={setIsMarkdownVisible}
-                    selectedNode={selectedNode}
                     onExportClick={handleExportClick}
                     setAlertMessage={setAlertMessage}
                     setIsAlertMessageVisible={setIsAlertMessageVisible}
