@@ -1278,7 +1278,6 @@ const MindMap = ({
                             }}
                         >
                             <TextContextMenu
-                                selectedText={selectedNode}
                                 onClose={closeTextContextMenu}
                                 deleteNode={deleteNodes}
                             />

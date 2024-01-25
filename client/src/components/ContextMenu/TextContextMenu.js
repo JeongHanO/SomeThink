@@ -5,9 +5,13 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const TextContextMenu = ({ selectedText, onClose, deleteNode }) => {
+import useSelectedObjectStore from "../../store/SelectedObjectStore";
+
+const TextContextMenu = ({ onClose, deleteNode }) => {
+    const { selectedNode } = useSelectedObjectStore();
+
     const handleDeleteNode = () => {
-        deleteNode(selectedText);
+        deleteNode(selectedNode);
         onClose();
     };
 
