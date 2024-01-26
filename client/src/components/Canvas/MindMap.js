@@ -13,7 +13,7 @@ import {
     ANIMATION_ZOOM_SCALE,
     ANIMATION_DURATION,
     ROOTNODE_ID,
-} from "../../Constant";
+} from "../../lib/Constant";
 
 import Graph from "react-graph-vis";
 import React, { useState, useEffect, useRef, useCallback } from "react";
