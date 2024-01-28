@@ -13,6 +13,7 @@ exports.isCallbackSet = !!CALLBACK_URL;
  * @param {any} origin
  * @param {WSSharedDoc} doc
  */
+
 exports.callbackHandler = (update, origin, doc) => {
     const room = doc.name;
     const dataToSend = {
