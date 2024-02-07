@@ -10,7 +10,7 @@ import MicSharpIcon from "@mui/icons-material/MicSharp";
 import MicOffSharpIcon from "@mui/icons-material/MicOffSharp";
 import Switch from "@mui/material/Switch";
 import { ExitToApp } from "@mui/icons-material";
-import { rootNode } from "../../Constant";
+import { rootNode } from "../../lib/Constant";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const colors = [

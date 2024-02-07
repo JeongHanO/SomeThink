@@ -1,5 +1,5 @@
 import React, { useState, key, useEffect } from "react";
-import { handleUndo, handleRedo } from "../Canvas/EventHandler";
+
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -11,7 +11,6 @@ import AccessAlarmRoundedIcon from "@mui/icons-material/AccessAlarmRounded";
 import UndoRoundedIcon from "@mui/icons-material/UndoRounded";
 import RedoRoundedIcon from "@mui/icons-material/RedoRounded";
 import Tooltip from "@mui/material/Tooltip";
-
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
@@ -20,7 +19,10 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import FormatListBulletedSharpIcon from "@mui/icons-material/FormatListBulletedSharp";
 import { Upload } from "@mui/icons-material";
 
+import { handleUndo, handleRedo } from "../Canvas/EventHandler";
 import FileUploader from "../Canvas/SnapshotUpload";
+
+import useSelectedObjectStore from "../../store/SelectedObjectStore";
 
 const styles = {
     bottomNav: {
@@ -144,8 +146,10 @@ export function handleUpload(content, ymapRef) {
 }
 
 export default function LowToolBar(props) {
+    const { selectedNode } = useSelectedObjectStore();
+
     const makeNode = () => {
-        props.NodeButton(props.selectedNode);
+        props.NodeButton(selectedNode);
     };
     const makeText = () => {
         props.TextButton();

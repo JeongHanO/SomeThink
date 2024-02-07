@@ -1,4 +1,4 @@
-import { NORMAL_NODE_COLOR } from "../../Constant";
+import { NORMAL_NODE_COLOR } from "../../lib/Constant";
 const getConnectedNodeLabels = (clickedNodeId, ymapRef) => {
     const connectedNodeIds = [clickedNodeId];
     let currentNodeId = clickedNodeId;

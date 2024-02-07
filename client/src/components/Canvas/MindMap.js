@@ -13,23 +13,23 @@ import {
     ANIMATION_ZOOM_SCALE,
     ANIMATION_DURATION,
     ROOTNODE_ID,
-} from "../../Constant";
+} from "../../lib/Constant";
 
 import Graph from "react-graph-vis";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import TopBar from "../TopBar/TopBar";
+
 import html2canvas from "html2canvas";
 import fileDownload from "js-file-download";
 import ImageSearch from "./ImageSearch";
-import { CreateTextInput } from "./TextInputComponent";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
+
 import {
     getConnectedNodeLabels,
     getAllNodeLabels,
     fetchNewNodeLabels,
     addNewNodesAndEdges,
 } from "../openai/api";
-import NodeLabelsPopup from "../openai/NodeLabelsPopup";
-
 import {
     handleDoubleClick,
     handleNodeDragEnd,
@@ -43,8 +43,8 @@ import {
     handleUndo,
     handleRedo,
 } from "./EventHandler";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
+
+import useSelectedObjectStore from "../../store/SelectedObjectStore";
 
 import NodeContextMenu from "../ContextMenu/NodeContextMenu";
 import EdgeContextMenu from "../ContextMenu/EdgeContextMenu";
@@ -59,8 +59,12 @@ import GraphToMarkdown from "./MarkDown";
 import { SnackbarProvider } from "notistack";
 import HighLighter from "./HighLighter";
 import { useLocation } from "react-router-dom";
-import "./MindMap.css";
+import { CreateTextInput } from "./TextInputComponent";
 import { handleUpload } from "../LowToolBar/LowToolBar";
+import TopBar from "../TopBar/TopBar";
+import NodeLabelsPopup from "../openai/NodeLabelsPopup";
+
+import "./MindMap.css";
 
 const isCyclic = (graph, fromNode, toNode) => {
     const insertEdge = `Edge ${fromNode} to ${toNode}`;
@@ -91,6 +95,9 @@ const MindMap = ({
     speakingUserName,
     isLoading,
 }) => {
+    const { selectedNode, setSelectedNode, selectedEdge, setSelectedEdge } =
+        useSelectedObjectStore();
+
     const ydocRef = useRef(new Y.Doc());
     const ymapRef = useRef(null);
     const networkRef = useRef(null);
@@ -130,8 +137,6 @@ const MindMap = ({
     const [memo, setMemo] = useState("");
     const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [isMemoVisible, setIsMemoVisible] = useState(false);
-    const [selectedNode, setSelectedNode] = useState(null);
-    const [selectedEdge, setSelectedEdge] = useState(null);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [newNodeLabels, setNewNodeLabels] = useState([]);
@@ -1233,7 +1238,6 @@ const MindMap = ({
                             }}
                         >
                             <NodeContextMenu
-                                selectedNode={selectedNode}
                                 onClose={closeNodeContextMenu}
                                 deleteNode={deleteNodes}
                                 createNode={createNode}
@@ -1274,7 +1278,6 @@ const MindMap = ({
                             }}
                         >
                             <TextContextMenu
-                                selectedText={selectedNode}
                                 onClose={closeTextContextMenu}
                                 deleteNode={deleteNodes}
                             />
@@ -1290,7 +1293,6 @@ const MindMap = ({
                     setIsImageSearchVisible={setIsImageSearchVisible}
                     isMarkdownVisible={isMarkdownVisible}
                     setIsMarkdownVisible={setIsMarkdownVisible}
-                    selectedNode={selectedNode}
                     onExportClick={handleExportClick}
                     setAlertMessage={setAlertMessage}
                     setIsAlertMessageVisible={setIsAlertMessageVisible}

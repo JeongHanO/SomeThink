@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, DECIMAL_PLACES } from "../../Constant";
+import { colors, DECIMAL_PLACES } from "../../lib/Constant";
 
 const UserMouseMove = (props) => {
     const { userMouseData, networkRef, userName, userList } = props;

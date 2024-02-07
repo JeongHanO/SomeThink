@@ -1,107 +1,84 @@
-import React, { Component } from "react";
-import MindMap from "./components/Canvas/MindMap";
+import { useState, useEffect } from "react";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+
 import { OpenVidu } from "openvidu-browser";
 import axios from "axios";
-import UserVideoComponent from "./components/Audio/UserVideoComponent";
 
-import LoadingBox from "./components/LoadingScreen/LoadingBox";
+import HomePage from "./components/Page/HomePage";
+import SessionPage from "./components/Page/SessionPage";
+import LoginPage from "./components/Page/LoginPage";
 
 import "./App.css";
 import "./Fonts/Font.css";
 
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./components/Page/HomePage";
-import SessionPage from "./components/Page/SessionPage";
-
 const APPLICATION_SERVER_URL =
     process.env.NODE_ENV === "production" ? "" : "https://somethink.online/";
 
-class App extends Component {
-    constructor(props) {
-        super(props);
+const App = () => {
+    const [appState, setAppState] = useState({
+        mySessionId: undefined,
+        myUserName: "User" + Math.floor(Math.random() * 200),
+        session: undefined,
+        mainStreamManager: undefined,
+        publisher: undefined,
+        subscribers: [],
+        audioEnabled: false,
+        speakingUserName: [],
+        isLoading: false,
+    });
 
-        this.state = {
-            mySessionId: undefined,
-            myUserName: "User" + Math.floor(Math.random() * 200),
-            session: undefined,
-            mainStreamManager: undefined,
-            publisher: undefined,
-            subscribers: [],
-            audioEnabled: false,
-            speakingUserName: [],
-            isLoading: false,
-        };
-
-        this.joinSession = this.joinSession.bind(this);
-        this.leaveSession = this.leaveSession.bind(this);
-        this.toggleAudio = this.toggleAudio.bind(this);
-        this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-        this.handleChangeUserName = this.handleChangeUserName.bind(this);
-        this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
-        // this.onbeforeunload = this.onbeforeunload.bind(this);
-        this.handleCreateSession = this.handleCreateSession.bind(this);
-        this.handleJoinSession = this.handleJoinSession.bind(this);
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         const storedSessionId = sessionStorage.getItem("sessionId");
         const storedUserName = sessionStorage.getItem("userName");
         if (storedSessionId) {
-            this.setState({ mySessionId: storedSessionId, myUserName: storedUserName }, () => {
-                this.joinSession();
+            setAppState({
+                ...appState,
+                mySessionId: storedSessionId,
+                myUserName: storedUserName,
             });
         } else {
             // window.location.href = "/";
             // this.handleCreateSession();
         }
-        window.addEventListener("beforeunload", this.onbeforeunload);
-    }
 
-    componentWillUnmount() {
-        window.removeEventListener("beforeunload", this.onbeforeunload);
-    }
+        return () => {
+            window.removeEventListener("beforeunload", onbeforeunload);
+        };
+    }, []);
 
-    // onbeforeunload(event) {
-    //     this.leaveSession();
-    // }
-
-    handleChangeSessionId(e) {
+    const handleChangeSessionId = (e) => {
         const sessionId = e.target.value.replace(/#/g, "");
         if (sessionId.match(/^[a-zA-Z0-9]+$/)) {
-            this.setState({
-                mySessionId: sessionId,
-            });
+            setAppState({ ...appState, mySessionId: sessionId });
         }
-    }
+    };
 
-    makeid(length) {
+    const makeid = (length) => {
         let result = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        const charactersLength = characters.length;
         let counter = 0;
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
         while (counter < length) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            counter += 1;
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+            counter++;
         }
         return result;
-    }
+    };
 
-    handleCreateSession() {
-        this.setState({
-            mySessionId: this.makeid(8),
-        });
-        this.joinSession();
-    }
+    const handleCreateSession = () => {
+        setAppState({ ...appState, mySessionId: makeid(8) });
+        joinSession();
+    };
 
-    handleJoinSession(callback) {
-        const mySessionId = this.state.mySessionId;
+    const handleJoinSession = (callback) => {
+        const mySessionId = appState.mySessionId;
         if (mySessionId === undefined || mySessionId === "") {
             alert("존재하지 않는 방입니다.");
             callback(false);
         } else {
-            this.validateSessionId(mySessionId).then((response) => {
+            validateSessionId(mySessionId).then((response) => {
                 if (response === true) {
-                    this.joinSession();
+                    joinSession();
                     callback(true);
                 } else {
                     alert("존재하지 않는 방입니다.");
@@ -109,172 +86,131 @@ class App extends Component {
                 }
             });
         }
-    }
+    };
 
-    handleChangeUserName(e) {
-        this.setState({
-            myUserName: e.target.value,
-        });
-    }
+    const handleChangeUserName = (e) => {
+        setAppState({ ...appState, myUserName: e.target.value });
+    };
 
-    handleMainVideoStream(stream) {
-        if (this.state.mainStreamManager !== stream) {
-            this.setState({
-                mainStreamManager: stream,
-            });
+    const handleMainVideoStream = (stream) => {
+        if (appState.mainStreamManager !== stream) {
+            setAppState({ ...appState, mainStreamManager: stream });
         }
-    }
+    };
 
-    deleteSubscriber(streamManager) {
-        let subscribers = this.state.subscribers;
+    const deleteSubscriber = (streamManager) => {
+        // TODO: const로 선언해도 문제없는 지 테스트
+        let subscribers = appState.subscribers;
         let index = subscribers.indexOf(streamManager, 0);
         if (index > -1) {
             subscribers.splice(index, 1);
-            this.setState({
-                subscribers: subscribers,
-            });
+            setAppState({ ...appState, subscribers: subscribers });
         }
-    }
+    };
 
-    handleSessionJoin() {
-        this.setState({
-            sessionJoined: true,
-        });
+    const handleSessionJoin = () => {
+        setAppState({ ...appState, isLoading: true });
+        setAppState({ ...appState, isLoading: false });
+    };
 
-        this.setState({
-            isLoading: false,
-        });
-    }
-
-    handleSpeakingUser(userName) {
-        const speakingUserName = this.state.speakingUserName;
+    const handleSpeakingUser = (userName) => {
+        const speakingUserName = appState.speakingUserName;
         speakingUserName.push(userName);
-        this.setState({
-            speakingUserName: speakingUserName,
-        });
-    }
+        setAppState({ ...appState, speakingUserName: speakingUserName });
+    };
 
-    handleDeleteSpeakingUser(userName) {
-        const speakingUserName = this.state.speakingUserName;
+    const handleDeleteSpeakingUser = (userName) => {
+        const speakingUserName = appState.speakingUserName;
         const index = speakingUserName.indexOf(userName);
         if (index > -1) {
             speakingUserName.splice(index, 1);
-            this.setState({
-                speakingUserName: speakingUserName,
-            });
+            setAppState({ ...appState, speakingUserName: speakingUserName });
         }
-    }
+    };
 
-    joinSession() {
-        // --- 1) Get an OpenVidu object ---
+    const joinSession = () => {
+        const OV = new OpenVidu();
 
-        this.OV = new OpenVidu();
-
-        this.OV.setAdvancedConfiguration({
+        OV.setAdvancedConfiguration({
             publisherSpeakingEventsOptions: {
                 interval: 20,
                 threshold: -50,
             },
         });
 
-        // --- 2) Init a session ---
-        document.body.style.backgroundColor = "white";
-        this.setState(
-            {
-                session: this.OV.initSession(),
-            },
-            () => {
-                var mySession = this.state.session;
+        setAppState({ ...appState, session: OV.initSession() }, () => {
+            let mySession = appState.session;
 
-                // --- 3) Specify the actions when events take place in the session ---
+            mySession.on("streamCreated", (event) => {
+                let subscriber = mySession.subscribe(event.stream, undefined);
+                let subscribers = appState.subscribers;
+                subscribers.push(subscriber);
 
-                // On every new Stream received...
-                mySession.on("streamCreated", (event) => {
-                    var subscriber = mySession.subscribe(event.stream, undefined);
-                    var subscribers = this.state.subscribers;
-                    subscribers.push(subscriber);
+                setAppState({ ...appState, subscribers: subscribers });
+            });
 
-                    // Update the state with the new subscribers
-                    this.setState({
-                        subscribers: subscribers,
-                    });
-                });
+            mySession.om("streamDestroyed", (event) => {
+                deleteSubscriber(event.stream.streamManager);
+            });
 
-                // On every Stream destroyed...
-                mySession.on("streamDestroyed", (event) => {
-                    // Remove the stream from 'subscribers' array
-                    this.deleteSubscriber(event.stream.streamManager);
-                });
+            mySession.on("exception", (exception) => {
+                console.warn(exception);
+            });
 
-                // On every asynchronous exception...
-                mySession.on("exception", (exception) => {
-                    console.warn(exception);
-                });
+            mySession.on("publisherStartSpeaking", (event) => {
+                const userName = JSON.parse(event.connection.data).clientData;
+                handleSpeakingUser(userName);
+            });
 
-                mySession.on("publisherStartSpeaking", (event) => {
-                    const userName = JSON.parse(event.connection.data).clientData;
-                    this.handleSpeakingUser(userName);
-                });
+            mySession.on("publisherStopSpeaking", (event) => {
+                const userName = JSON.parse(event.connection.data).clientData;
+                handleDeleteSpeakingUser(userName);
+            });
 
-                mySession.on("publisherStopSpeaking", (event) => {
-                    const userName = JSON.parse(event.connection.data).clientData;
-                    this.handleDeleteSpeakingUser(userName);
-                });
-
-                // --- 4) Connect to the session with a valid user token ---
-
-                // Get a token from the OpenVidu deployment
-                this.getToken().then((token) => {
-                    // First param is the token got from the OpenVidu deployment. Second param can be retrieved by every user on event
-                    // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
-                    mySession
-                        .connect(token, { clientData: this.state.myUserName })
-                        .then(async () => {
-                            // --- 5) Get your own audio stream ---
-                            let publisher = await this.OV.initPublisherAsync(undefined, {
-                                audioSource: undefined,
-                                videoSource: false,
-                                publishAudio: false,
-                                publishVideo: false,
-                            });
-
-                            // --- 6) Publish your stream ---
-
-                            mySession.publish(publisher);
-
-                            this.setState({
-                                mainStreamManager: publisher,
-                                publisher: publisher,
-                            });
-                            sessionStorage.setItem("sessionId", this.state.mySessionId);
-                            sessionStorage.setItem("userName", this.state.myUserName);
-                            this.handleSessionJoin();
-                        })
-                        .catch((error) => {
-                            console.log(
-                                "There was an error connecting to the session:",
-                                error.code,
-                                error.message
-                            );
+            getToken().then((token) => {
+                mySession
+                    .connect(token, { clientData: appState.myUserName })
+                    .then(async () => {
+                        let publisher = OV.initPublisher(undefined, {
+                            audioSource: undefined,
+                            videoSource: false,
+                            publishAudio: false,
+                            publishVideo: false,
                         });
-                });
-            }
-        );
-    }
 
-    leaveSession() {
-        // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
+                        mySession.publish(publisher);
+
+                        setAppState({
+                            ...appState,
+                            mainStreamManager: publisher,
+                            publisher: publisher,
+                        });
+                        sessionStorage.setItem("sessionId", appState.mySessionId);
+                        sessionStorage.setItem("userName", appState.myUserName);
+                        handleSessionJoin();
+                    })
+                    .catch((error) => {
+                        console.log(
+                            "There was an error connecting to the session:",
+                            error.code,
+                            error.message
+                        );
+                    });
+            });
+        });
+    };
+
+    const leaveSession = () => {
         sessionStorage.removeItem("sessionId");
         sessionStorage.removeItem("userName");
-        const mySession = this.state.session;
-        document.body.style.backgroundColor = "#fbd85d";
+        const mySession = appState.session;
         if (mySession) {
             mySession.disconnect();
         }
 
-        const { myUserName, mySessionId } = this.state;
+        const { myUserName, mySessionId } = appState;
         axios
-            .post(APPLICATION_SERVER_URL + "api/leavesession", {
+            .post(APPLICATION_SERVER_URL + "api/leave", {
                 userName: myUserName,
                 sessionId: mySessionId,
             })
@@ -285,11 +221,7 @@ class App extends Component {
                 console.error("Error leaving the session on the server:", error);
             });
 
-        // window.location.reload();
-
-        // Empty all properties...
-        this.OV = null;
-        this.setState({
+        setAppState({
             session: undefined,
             subscribers: [],
             mySessionId: undefined,
@@ -299,124 +231,108 @@ class App extends Component {
         });
 
         window.location.href = "/";
-    }
+    };
 
-    toggleAudio() {
-        const { publisher, audioEnabled } = this.state;
+    const toggleAudio = () => {
+        const { publisher, audioEnabled } = appState;
 
         if (publisher) {
             publisher.publishAudio(!audioEnabled);
 
-            this.setState({
-                audioEnabled: !audioEnabled,
-            });
+            setAppState({ ...appState, audioEnabled: !audioEnabled });
         }
-    }
+    };
 
-    render() {
-        const { isLoading } = this.state;
-        const mySessionId = this.state.mySessionId;
-        const myUserName = this.state.myUserName;
-        const audioEnabled = this.state.audioEnabled;
-        return (
-            <Router>
-                <Routes>
-                    <Route
-                        exact
-                        path="/"
-                        element={
-                            <HomePage
-                                myUserName={myUserName}
-                                handleChangeUserName={this.handleChangeUserName}
-                                handleCreateSession={this.handleCreateSession}
-                                handleJoinSession={this.handleJoinSession}
-                                isLoading={isLoading}
-                                mySessionId={mySessionId}
-                                handleChangeSessionId={this.handleChangeSessionId}
-                                // handleSetisLoading={this.handleSetisLoading}
-                            />
-                        }
-                    />
-                    <Route
-                        exact
-                        path="/session"
-                        element={
-                            <SessionPage
-                                session={this.state.session}
-                                mySessionId={mySessionId}
-                                myUserName={myUserName}
-                                audioEnabled={audioEnabled}
-                                handleMainVideoStream={this.handleMainVideoStream}
-                                subscribers={this.state.subscribers}
-                                publisher={this.state.publisher}
-                                leaveSession={this.leaveSession}
-                                toggleAudio={this.toggleAudio}
-                                speakingUserName={this.state.speakingUserName}
-                                isLoading={isLoading}
-                                handleSessionJoin={this.handleSessionJoin}
-                            />
-                        }
-                    />
-                </Routes>
-            </Router>
-        );
-    }
+    const getToken = async () => {
+        const sessionId = await createSession(appState.mySessionId);
+        console.log("Session ID: ", sessionId);
+        return await createToken(sessionId);
+    };
 
-    /**
-     * --------------------------------------------
-     * GETTING A TOKEN FROM YOUR APPLICATION SERVER
-     * --------------------------------------------
-     * The methods below request the creation of a Session and a Token to
-     * your application server. This keeps your OpenVidu deployment secure.
-     *
-     * In this sample code, there is no user control at all. Anybody could
-     * access your application server endpoints! In a real production
-     * environment, your application server must identify the user to allow
-     * access to the endpoints.
-     *
-     * Visit https://docs.openvidu.io/en/stable/application-server to learn
-     * more about the integration of OpenVidu in your application server.
-     */
-    async getToken() {
-        const sessionId = await this.createSession(this.state.mySessionId);
-        console.log("세션 아이디 : " + sessionId);
-        return await this.createToken(sessionId);
-    }
-
-    async createSession(sessionId) {
+    const createSession = async (sessionId) => {
         const response = await axios.post(
-            APPLICATION_SERVER_URL + "api/sessions",
-            { customSessionId: sessionId },
+            APPLICATION_SERVER_URL + "api/session",
             {
-                headers: { "Content-Type": "application/json" },
+                customSessionId: sessionId,
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
             }
         );
-        return response.data; // The sessionId
-    }
+        return response.data;
+    };
 
-    async createToken(sessionId) {
+    const createToken = async (sessionId) => {
         const response = await axios.post(
             APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
             {},
             {
-                headers: { "Content-Type": "application/json" },
-            }
-        );
-        return response.data; // The token
-    }
-
-    async validateSessionId(sessionId) {
-        const response = await axios.get(
-            APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/validate",
-            {
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
             }
         );
         return response.data;
-    }
-}
+    };
 
-// Apply CSS to prevent scrolling
+    const validateSessionId = async (sessionId) => {
+        const response = await axios.get(
+            APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/validate",
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response.data;
+    };
+
+    return (
+        <Router>
+            <Routes>
+                <Route
+                    exact
+                    path="/"
+                    element={
+                        <HomePage
+                            myUserName={appState.myUserName}
+                            handleChangeUserName={handleChangeUserName}
+                            handleCreateSession={handleCreateSession}
+                            handleJoinSession={handleJoinSession}
+                            isLoading={appState.isLoading}
+                            mySessionId={appState.mySessionId}
+                            handleChangeSessionId={handleChangeSessionId}
+                        />
+                    }
+                />
+                <Route
+                    exact
+                    path="/session"
+                    element={
+                        <SessionPage
+                            session={appState.session}
+                            mySessionId={appState.mySessionId}
+                            myUserName={appState.myUserName}
+                            audioEnabled={appState.audioEnabled}
+                            handleMainVideoStream={handleMainVideoStream}
+                            subscribers={appState.subscribers}
+                            publisher={appState.publisher}
+                            leaveSession={leaveSession}
+                            toggleAudio={toggleAudio}
+                            speakingUserName={appState.speakingUserName}
+                            isLoading={appState.isLoading}
+                            handleSessionJoin={handleSessionJoin}
+                        />
+                    }
+                />
+                <Route exact path="login" element={<LoginPage />} />
+            </Routes>
+        </Router>
+    );
+};
+
 document.body.style.overflow = "hidden";
 
 export default App;

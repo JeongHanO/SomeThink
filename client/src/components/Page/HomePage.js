@@ -2,7 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, TextField, Button, Slide } from "@mui/material";
+
 import "./HomePage.css";
+import BackgroundCircles from "../BackGround/BackGroundCircles";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -146,21 +148,9 @@ function HomePage(props) {
 
     return (
         <div id="join">
-            <div className="big-circles" style={{ pointerEvents: "none" }}>
-                <div className="big-circle"></div>
-                <div className="big-circle"></div>
-                <div className="big-circle"></div>
-            </div>
+            <BackgroundCircles />
             <section id="home">
                 <div className="slide-wrapper">
-                    <div className="smallcircles" style={{ pointerEvents: "none" }}>
-                        <div className="small-circle"></div>
-                        <div className="small-circle"></div>
-                        <div className="small-circle"></div>
-                        <div className="small-circle"></div>
-                        <div className="small-circle"></div>
-                        <div className="small-circle"></div>
-                    </div>
                     <div id="join-dialog" className="jumbotron vertical-center">
                         <a href="https://somethink.online/dino" className="logo" draggable="false">
                             {" "}

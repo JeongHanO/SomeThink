@@ -8,7 +8,7 @@ import {
     throttle,
     BOOKMARK_ICON,
     DECIMAL_PLACES,
-} from "../../Constant";
+} from "../../lib/Constant";
 
 export const handleDoubleClick = (
     event,

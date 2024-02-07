@@ -12,8 +12,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ShapeLineTwoToneIcon from "@mui/icons-material/ShapeLineTwoTone";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 
+import useSelectedObjectStore from "../../store/SelectedObjectStore";
+
 const NodeContextMenu = ({
-    selectedNode,
     onClose,
     deleteNode,
     createNode,
@@ -24,6 +25,8 @@ const NodeContextMenu = ({
     setInfoMessage,
     setIsInfoMessageVisible,
 }) => {
+    const { selectedNode } = useSelectedObjectStore();
+
     const handleDeleteNode = () => {
         deleteNode(selectedNode);
         onClose();
