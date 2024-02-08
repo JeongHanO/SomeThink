@@ -149,7 +149,7 @@ const App = () => {
                 setAppState({ ...appState, subscribers: subscribers });
             });
 
-            mySession.om("streamDestroyed", (event) => {
+            mySession.on("streamDestroyed", (event) => {
                 deleteSubscriber(event.stream.streamManager);
             });
 
