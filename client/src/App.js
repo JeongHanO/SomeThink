@@ -251,7 +251,7 @@ const App = () => {
 
     const createSession = async (sessionId) => {
         const response = await axios.post(
-            APPLICATION_SERVER_URL + "api/session",
+            APPLICATION_SERVER_URL + "api/sessions",
             {
                 customSessionId: sessionId,
             },
