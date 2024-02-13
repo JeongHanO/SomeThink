@@ -47,12 +47,10 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (appState.session) {
-            if (appState.mySessionId !== undefined) {
-                joinSession();
-            }
+        if (appState.mySessionId !== undefined) {
+            joinSession();
         }
-    }, [appState]);
+    }, [appState.mySessionId]);
 
     const handleChangeSessionId = (e) => {
         const sessionId = e.target.value.replace(/#/g, "");
