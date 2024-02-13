@@ -46,6 +46,14 @@ const App = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (appState.session) {
+            if (appState.mySessionId !== undefined) {
+                joinSession();
+            }
+        }
+    }, [appState]);
+
     const handleChangeSessionId = (e) => {
         const sessionId = e.target.value.replace(/#/g, "");
         if (sessionId.match(/^[a-zA-Z0-9]+$/)) {
@@ -67,7 +75,6 @@ const App = () => {
 
     const handleCreateSession = () => {
         setAppState({ ...appState, mySessionId: makeid(8) });
-        joinSession();
     };
 
     const handleJoinSession = (callback) => {
@@ -138,8 +145,8 @@ const App = () => {
             },
         });
 
-        setAppState({ ...appState, session: OV.initSession() }, () => {
-            let mySession = appState.session;
+        setAppState((prevState) => {
+            const mySession = OV.initSession();
 
             mySession.on("streamCreated", (event) => {
                 let subscriber = mySession.subscribe(event.stream, undefined);
@@ -197,6 +204,8 @@ const App = () => {
                         );
                     });
             });
+
+            return { ...prevState, session: mySession };
         });
     };
 
@@ -245,7 +254,6 @@ const App = () => {
 
     const getToken = async () => {
         const sessionId = await createSession(appState.mySessionId);
-        console.log("Session ID: ", sessionId);
         return await createToken(sessionId);
     };
 
