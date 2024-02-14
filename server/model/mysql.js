@@ -1,17 +1,18 @@
 const dotenv = require("dotenv");
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 dotenv.config();
 
 class SingletonBase {
     constructor() {
         if (!!SingletonBase.instance) {
             console.log("already has instance");
-            console.log("return exising instance");
+            console.log("return existing instance");
 
             return SingletonBase.instance;
         }
     }
 }
+
 module.exports = class DatabaseConnector extends SingletonBase {
     constructor() {
         super();
@@ -21,53 +22,52 @@ module.exports = class DatabaseConnector extends SingletonBase {
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
         };
+        this.pool = mysql.createPool({
+            ...this.config,
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 10,
+        });
         return this;
     }
 
-    init() {
-        this.connection = mysql.createConnection({
-            ...this.config,
-            multipleStaments: true,
-        });
-
-        return new Promise((resolve, reject) => {
-            this.connection.connect((err) => {
-                if (err) {
-                    reject(err.message);
-                }
-                resolve("complete!");
-            });
-        });
-    }
-
-    terminate() {
-        if (!this.connection || this.connection.state === "disconnected") {
-            console.log("connot termiate connection of disconnected state");
-            return;
+    async init() {
+        try {
+            await this.pool.query("CREATE DATABASE IF NOT EXISTS " + process.env.DATABASE_NAME);
+            console.log("Database created or successfully checked");
+            await this.pool.query(`
+                CREATE TABLE IF NOT EXISTS user (
+                    user_id int NOT NULL AUTO_INCREMENT,
+                    user_email varchar(255),
+                    password varchar(255),
+                    created_at timestamp,
+                    username varchar(255),
+                    PRIMARY KEY (user_id)
+                )
+            `);
+            console.log("User table created or successfully checked");
+            return "complete!";
+        } catch (error) {
+            throw error;
         }
-        return new Promise((resolve, reject) => {
-            this.connection.end((err) => {
-                if (err) {
-                    reject(err.message);
-                }
-
-                delete this.connection;
-                resolve("complete!");
-            });
-        });
     }
 
-    /**
-     *
-     * @param {Mysql query} sql
-     */
-    query(sql) {
-        this.connection.query(query, (error, results) => {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(results);
-            }
-        });
+    async terminate() {
+        try {
+            await this.pool.end();
+            console.log("Connection pool terminated successfully");
+            return "complete!";
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async query(sql) {
+        try {
+            const [rows, fields] = await this.pool.query(sql);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
     }
 };

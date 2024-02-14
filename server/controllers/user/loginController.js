@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const fsPromises = require("fs").promises;
+const DB = require("../../model/mysql");
+const db = new DB();
 const path = require("path");
 const usersDB = {
     users: require("../../model/users.json"),
@@ -10,19 +12,21 @@ const usersDB = {
     },
 };
 const allUser = async (req, res) => {
-    const users = usersDB.users;
-    res.json(users);
+    const userdata = await db.query("SELECT * FROM user");
+    console.log(userdata);
+    res.json(userdata);
 };
 const handleLogin = async (req, res) => {
-    const { user, pwd } = req.query;
-    console.log(user, pwd);
-    console.log(req.headers.host);
-    if (!user || !pwd)
+    console.log(req.query);
+    const { username, password } = req.query;
+    console.log(username, password);
+    if (!username || !password)
         return res.status(400).json({ message: `Username and password are required` });
-    const foundUser = usersDB.users.find((person) => person.username === user);
+    const userdata = await db.query("SELECT * FROM user");
+    const foundUser = userdata.find((person) => person.username === username);
     if (!foundUser) return res.sendStatus(401);
 
-    const match = await bcrypt.compare(pwd, foundUser.password);
+    const match = await bcrypt.compare(password, foundUser.password);
 
     if (match) {
         // jwt create
@@ -30,7 +34,7 @@ const handleLogin = async (req, res) => {
             { username: foundUser.username },
             process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: "30s",
+                expiresIn: "120s",
             }
         );
         const refreshToken = jwt.sign(
