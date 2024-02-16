@@ -9,8 +9,8 @@ const map = require("lib0/dist/map.cjs");
 // 한번만 실행 시켜주는 함수 기능들
 const debounce = require("lodash.debounce");
 
-const callbackHandler = require("./callback.js").callbackHandler;
-const isCallbackSet = require("./callback.js").isCallbackSet;
+const callbackHandler = require("./callbackHandler.js").callbackHandler;
+const isCallbackSet = require("./callbackHandler.js").isCallbackSet;
 
 const CALLBACK_DEBOUNCE_WAIT = parseInt(process.env.CALLBACK_DEBOUNCE_WAIT) || 2000;
 const CALLBACK_DEBOUNCE_MAXWAIT = parseInt(process.env.CALLBACK_DEBOUNCE_MAXWAIT) || 10000;

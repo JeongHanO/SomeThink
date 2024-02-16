@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    title 회원 로그인 폼
+  body
+    h1 회원 로그인 폼
+    form(action="/login", method="post")
+      label(for="username") 아이디:
+      input(type="text", name="username", id="username", required)
+      br
+      label(for="password") 패스워드:
+      input(type="password", name="password", id="password", required)
+      br
+      input(type="submit", value="로그인")
