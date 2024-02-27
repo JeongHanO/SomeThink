@@ -70,4 +70,22 @@ module.exports = class DatabaseConnector extends SingletonBase {
             throw error;
         }
     }
+    async execute(sql, param) {
+        let conn;
+        try {
+            conn = await this.pool.getConnection();
+            await conn.beginTransaction();
+            const [rows, fields] = await conn.query(sql, param);
+            await conn.commit();
+            return rows;
+        } catch (error) {
+            await conn.rollback();
+            console.error("Error executing SQL query:", error);
+            throw error;
+        } finally {
+            if (conn) {
+                conn.release();
+            }
+        }
+    }
 };

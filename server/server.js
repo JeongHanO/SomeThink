@@ -36,6 +36,7 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(logger);
+// off credentail and cors if you are testing in a view file
 app.use(credentails);
 app.use(cors(corsOptions));
 // Allow application/x-www-form-urlencoded
