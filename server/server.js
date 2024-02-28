@@ -13,6 +13,8 @@ const bodyParser = require("body-parser");
 const proxy_server = require("./controllers/proxy/proxyController.js").startProxyServer;
 require("dotenv").config(!!process.env.CONFIG ? { path: process.env.CONFIG } : {});
 const WebSocket = require("ws");
+const DB = require("./model/mysql.js");
+const redis = require("./model/redis.js");
 const http = require("http");
 const server = http.createServer((request, response) => {
     response.writeHead(200, { "Content-Type": "text/plain" });
@@ -34,11 +36,12 @@ let OPENVIDU_SECRET = process.env.OPENVIDU_SECRET;
 /* generate Client id */
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
-
+DB.init();
+redis.client.connect().then();
 app.use(logger);
-// off credentail and cors if you are testing in a view file
-app.use(credentails);
-app.use(cors(corsOptions));
+// Off credentail and cors if you are testing in a view file
+// app.use(credentails);
+// app.use(cors(corsOptions));
 // Allow application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // Allow application/json
@@ -51,7 +54,6 @@ app.use("/api", require("./routes/api/audio/audio.js"));
 app.use("/user", require("./routes/api/user/login.js"));
 app.use(verifyJWT);
 app.use(errorHandler);
-
 wss.on("connection", setupWSConnection);
 server.on("upgrade", (request, socket, head) => {
     // You may check auth of request here..

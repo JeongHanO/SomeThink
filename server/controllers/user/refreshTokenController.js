@@ -5,13 +5,18 @@ const usersDB = {
     },
 };
 const jwt = require("jsonwebtoken");
+const redis = require("../../model/redis");
+const redisCli = redis.client.v4;
 require("dotenv").config();
 
-const handleRefreshToken = (req, res) => {
+const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(401);
     const refreshToken = cookies.jwt;
 
+    // TODO: Create refreshToken
+    //Check existing user
+    // FIXME: DELTE EXTRA DB
     const foundUser = usersDB.users.find((person) => person.refreshToken === refreshToken);
     if (!foundUser) return res.sendStatus(403); //Forbidden
     // evaluate jwt
@@ -26,7 +31,7 @@ const handleRefreshToken = (req, res) => {
                 },
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "30s" }
+            { expiresIn: "120s" }
         );
         res.json({ accessToken });
     });

@@ -8,12 +8,11 @@ const usersDB = {
 const fsPromises = require("fs").promises;
 const path = require("path");
 const bcrypt = require("bcrypt");
-const DB = require("../../model/mysql");
-const db = new DB();
+const db = require("../../model/mysql");
 const QUERY_LIST = require("../../model/queries/userQueries");
 const getNewUser = async (req, res) => {
-    console.log(usersDB.users);
-    res.json(usersDB.users);
+    const user_data = await db.execute(QUERY_LIST.GET_USER, "test1");
+    res.json(user_data);
 };
 const handleNewUser = async (req, res) => {
     const { username, password, email } = req.body;
@@ -37,12 +36,8 @@ const handleNewUser = async (req, res) => {
         usersDB.setUsers([...usersDB.users, newUser]);
         //email, password, created_at, username
         await db.execute(QUERY_LIST.POST_USER, [newUser.email, newUser.password, newUser.username]);
-        await db.execute(QUERY_LIST.POST_ROLE);
-        // Testing Extra Database
-        await fsPromises.writeFile(
-            path.join(__dirname, "..", "..", "model", "users.json"),
-            JSON.stringify(usersDB.users)
-        );
+        // TODO: Add Role query
+
         res.status(201).json({ success: `New user ${username} created!` });
     } catch (err) {
         res.status(500).json({ message: err.message });

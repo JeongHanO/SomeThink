@@ -1,1 +1,20 @@
-[{"username":"slstls2","roles":{"User":2},"password":"$2b$10$GlHS7MRdqlxiwD0cZKhehuT9wmb/X6Jlw4vV7mqp/C95cTaNPAgg.","email":"slstsl2@naver.com"},{"username":"park","roles":{"User":2},"password":"$2b$10$m9zHv.bSHzbsB0mGpWyqOe7FiO9GMwNVrynL8Tx.z/UwHAASMTYDa","email":"kim@naver.com"}]
+[
+    {
+        "username": "slstls2",
+        "roles": { "User": 2 },
+        "password": "$2b$10$GlHS7MRdqlxiwD0cZKhehuT9wmb/X6Jlw4vV7mqp/C95cTaNPAgg.",
+        "email": "slstsl2@naver.com"
+    },
+    {
+        "username": "park",
+        "roles": { "User": 2 },
+        "password": "$2b$10$m9zHv.bSHzbsB0mGpWyqOe7FiO9GMwNVrynL8Tx.z/UwHAASMTYDa",
+        "email": "kim@naver.com"
+    },
+    {
+        "username": "her",
+        "roles": { "User": 2 },
+        "password": "$2b$10$qIuCXi.47yhVSMwTu9Vt3.16HUL3zg1Nj2xllCshUbeOctedJily2",
+        "email": "asdf@naver.com"
+    }
+]

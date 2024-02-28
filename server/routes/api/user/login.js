@@ -1,8 +1,8 @@
 const express = require("express");
+require("dotenv").config();
 const router = express.Router();
 const loginController = require("../../../controllers/user/loginController");
 const registerController = require("../../../controllers/user/registerController");
-
 router.get("/signin", (req, res) => {
     res.render("login");
 });
