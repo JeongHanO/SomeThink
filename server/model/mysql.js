@@ -12,6 +12,7 @@ class SingletonBase {
         }
     }
 }
+
 class DatabaseConnector extends SingletonBase {
     constructor() {
         super();
@@ -63,6 +64,19 @@ class DatabaseConnector extends SingletonBase {
     /**
      *
      * @param {DB query} sql
+     * @returns colums_data
+     */
+    async query(sql) {
+        try {
+            const [rows, fields] = await this.pool.query(sql);
+            return rows;
+        } catch (error) {
+            throw error;
+        }
+    }
+    /**
+     *
+     * @param {DB query} sql
      * @param {Value_data} param
      * @returns colums_data
      */
@@ -85,4 +99,5 @@ class DatabaseConnector extends SingletonBase {
         }
     }
 }
+
 module.exports = new DatabaseConnector();

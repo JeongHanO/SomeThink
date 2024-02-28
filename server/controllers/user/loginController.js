@@ -27,7 +27,6 @@ const handleLogin = async (req, res) => {
     // get_DBdata
 
     const get_User = await db.execute(QUERY_LIST.GET_USER, username);
-    console.log(get_User);
     if (!get_User) return res.sendStatus(401);
 
     // FIXME: Enhance code
@@ -62,8 +61,8 @@ const handleLogin = async (req, res) => {
         //     path.join(__dirname, "..", "..", "model", "users.json"),
         //     JSON.stringify(usersDB.users)
         // );
-        await redisCli.set(get_User[0].username, refreshToken);
-        await redisCli.expire(get_User[0].username, 24 * 60 * 60);
+        await redisCli.set(refreshToken, get_User[0].username);
+        await redisCli.expire(refreshToken, 24 * 60 * 60);
         // refreshToken을 프론트 cookie에 전달하는 방식
         res.cookie("jwt", refreshToken, {
             httpOnly: true,
@@ -72,7 +71,7 @@ const handleLogin = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
         // 보내면 client에서 처리
-        res.json({ accessToken });
+        res.json({ accessToken: accessToken, message: "Success Login" });
     } else {
         res.sendStatus(401);
     }

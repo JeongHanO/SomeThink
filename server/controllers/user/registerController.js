@@ -33,12 +33,12 @@ const handleNewUser = async (req, res) => {
             password: hashedPwd,
             email: email,
         };
-        usersDB.setUsers([...usersDB.users, newUser]);
+        // usersDB.setUsers([...usersDB.users, newUser]);
         //email, password, created_at, username
         await db.execute(QUERY_LIST.POST_USER, [newUser.email, newUser.password, newUser.username]);
         // TODO: Add Role query
-
-        res.status(201).json({ success: `New user ${username} created!` });
+        await db.execute(QUERY_LIST.POST_ROLE, newUser.roles.User);
+        res.status(201).json({ message: `New user ${username} created!` });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
