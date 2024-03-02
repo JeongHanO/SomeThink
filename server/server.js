@@ -39,9 +39,10 @@ app.set("views", path.join(__dirname, "views"));
 DB.init();
 redis.client.connect().then();
 app.use(logger);
-// Off credentail and cors if you are testing in a view file
+// FIXME: Off credentail and cors if you are testing in a view file
 // app.use(credentails);
 // app.use(cors(corsOptions));
+
 // Allow application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // Allow application/json
@@ -65,16 +66,15 @@ server.on("upgrade", (request, socket, head) => {
     };
     wss.handleUpgrade(request, socket, head, handleAuth);
 });
-
-// timer port
+// sync port
 server.listen(SYNCPORT, host, () => {
     console.log(`running at '${host}' on port ${SYNCPORT}`);
 });
+
 // // Serve application
 audio_server.listen(SERVER_PORT, () => {
     console.log("Application started on port: ", SERVER_PORT);
     console.warn("Application server connecting to OpenVidu at " + OPENVIDU_URL);
     proxy_server();
 });
-
 process.on("uncaughtException", (err) => console.error(err));

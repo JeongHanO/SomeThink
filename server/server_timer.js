@@ -9,7 +9,7 @@ const http = require("http");
 const wss = new WebSocket.Server({ noServer: true });
 const setupWSConnection = require("./utils.js").TimersetupWSConnection;
 const host = process.env.TIMER_HOST || "localhost";
-const SYNCPORT = process.env.TIMER_PORT || 2345;
+const TIMER_PORT = process.env.TIMER_PORT || 2345;
 const server = http.createServer((request, response) => {
     response.writeHead(200, { "Content-Type": "text/plain" });
     response.end("okay");
@@ -40,6 +40,6 @@ server.on("upgrade", (request, socket, head) => {
     wss.handleUpgrade(request, socket, head, handleAuth);
 });
 
-server.listen(SYNCPORT, host, () => {
-    console.log(`running at '${host}' on port ${SYNCPORT}`);
+server.listen(TIMER_PORT, host, () => {
+    console.log(`running at '${host}' on port ${TIMER_PORT}`);
 });

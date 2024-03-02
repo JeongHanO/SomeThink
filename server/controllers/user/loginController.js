@@ -24,8 +24,60 @@ const handleLogin = async (req, res) => {
     if (!username || !password)
         return res.status(400).json({ message: `Username and password are required` });
 
-    // get_DBdata
-
+    // Test Environment
+    const jestTest = process.env.NODE_ENV === "test";
+    if (jestTest) {
+        const check_user = usersDB.users.find((person) => person.username === username);
+        if (!check_user) {
+            return res.sendStatus(401);
+        }
+        try {
+            const match = await bcrypt.compare(password, check_user.password);
+            if (match) {
+                // jwt create
+                const roles = Object.values(check_user.roles);
+                const accessToken = jwt.sign(
+                    {
+                        UserInfo: {
+                            username: check_user.username,
+                            roles: roles,
+                        },
+                    },
+                    process.env.ACCESS_TOKEN_SECRET,
+                    {
+                        expiresIn: "120s",
+                    }
+                );
+                // Create if not exist RefreshToken in Database
+                const refreshToken = jwt.sign(
+                    {
+                        username: check_user.username,
+                    },
+                    process.env.REFRESH_TOKEN_SECRET,
+                    { expiresIn: "1d" }
+                );
+                const otherUser = usersDB.users.filter((person) => person.username !== username);
+                const currentUser = { ...check_user, refreshToken: refreshToken };
+                usersDB.setUsers([...otherUser, currentUser]);
+                await fsPromises.writeFile(
+                    path.join(__dirname, "..", "..", "model", "users.json"),
+                    JSON.stringify(usersDB.users)
+                );
+                // refreshToken을 프론트 cookie에 전달하는 방식
+                res.cookie("jwt", refreshToken, {
+                    httpOnly: true,
+                    sameSite: "None",
+                    secure: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                });
+                // 보내면 client에서 처리
+                return res.status(200).json({ accessToken: accessToken, message: "Success Login" });
+            }
+        } catch (err) {
+            return res.sendStatus(401);
+        }
+    }
+    // get_ with Service DBdata
     const get_User = await db.execute(QUERY_LIST.GET_USER, username);
     if (!get_User) return res.sendStatus(401);
 
@@ -46,7 +98,7 @@ const handleLogin = async (req, res) => {
                 expiresIn: "120s",
             }
         );
-        // Create if not exist RefreshToken in Database
+        // TODO:Create if not exist RefreshToken in Database
         const refreshToken = jwt.sign(
             {
                 username: get_User[0].username,
@@ -55,12 +107,6 @@ const handleLogin = async (req, res) => {
             { expiresIn: "1d" }
         );
         //TODO: Use Redis
-        // const currentUser = { ...foundUser, refreshToken: refreshToken };
-        // usersDB.setUsers([...otherUsers, currentUser]);
-        // await fsPromises.writeFile(
-        //     path.join(__dirname, "..", "..", "model", "users.json"),
-        //     JSON.stringify(usersDB.users)
-        // );
         await redisCli.set(refreshToken, get_User[0].username);
         await redisCli.expire(refreshToken, 24 * 60 * 60);
         // refreshToken을 프론트 cookie에 전달하는 방식
@@ -71,9 +117,9 @@ const handleLogin = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
         // 보내면 client에서 처리
-        res.json({ accessToken: accessToken, message: "Success Login" });
+        return res.json({ accessToken: accessToken, message: "Success Login" });
     } else {
-        res.sendStatus(401);
+        return res.sendStatus(401);
     }
 };
 
