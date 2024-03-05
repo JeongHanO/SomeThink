@@ -1,0 +1,21 @@
+// views/register.pug
+doctype html
+html
+  head
+    title 회원 가입 폼
+  body
+    h1 회원 가입 폼
+    form(action="signup/register", method="post")
+      label(for="username") 아이디:
+      input(type="text", name="username", id="username", required)
+      br
+      label(for="password") 패스워드:
+      input(type="password", name="password", id="password", required)
+      br
+      label(for="confirmPassword") 패스워드 확인:
+      input(type="password", name="confirmPassword", id="confirmPassword")
+      br
+      label(for="email") 이메일:
+      input(type="email", name="email", id="email", required)
+      br
+      input(type="submit", value="가입하기")

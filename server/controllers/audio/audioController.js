@@ -20,7 +20,7 @@ const generatecheck = async (req, res) => {
         res.status(404).send();
     } else {
         var connection = await session.createConnection(req.body);
-        console.log("connection", connection);
+        // console.log("connection", connection);
         res.send(connection.token);
     }
 };

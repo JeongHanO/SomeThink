@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const helmet = require("helmet");
 const path = require("path");
 const cors = require("cors"); // Add this line to import CORS
 const corsOptions = require("./config/corsOptions.js");
@@ -9,9 +10,11 @@ const verifyJWT = require("./middleware/verifyJWT.js");
 const credentails = require("./middleware/credentials.js");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-const proxy_server = require("./controllers/proxy/proxyController.js");
+const proxy_server = require("./controllers/proxy/proxyController.js").startProxyServer;
 require("dotenv").config(!!process.env.CONFIG ? { path: process.env.CONFIG } : {});
 const WebSocket = require("ws");
+const DB = require("./model/mysql.js");
+const redis = require("./model/redis.js");
 const http = require("http");
 const server = http.createServer((request, response) => {
     response.writeHead(200, { "Content-Type": "text/plain" });
@@ -31,23 +34,27 @@ let OPENVIDU_URL = process.env.OPENVIDU_URL || "http://localhost:4443";
 let OPENVIDU_SECRET = process.env.OPENVIDU_SECRET;
 
 /* generate Client id */
-// app.set("view engine", "pug");
-// app.set("views", path.join(__dirname, "views"));
-
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+DB.init();
+redis.client.connect().then();
 app.use(logger);
-app.use(credentails);
-app.use(cors(corsOptions));
+// FIXME: Off credentail and cors if you are testing in a view file
+// app.use(credentails);
+// app.use(cors(corsOptions));
+
 // Allow application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // Allow application/json
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(helmet());
 app.use(express.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", require("./routes/api/audio/audio.js"));
+app.use("/user", require("./routes/api/user/login.js"));
 app.use(verifyJWT);
 app.use(errorHandler);
-
 wss.on("connection", setupWSConnection);
 server.on("upgrade", (request, socket, head) => {
     // You may check auth of request here..
@@ -59,21 +66,10 @@ server.on("upgrade", (request, socket, head) => {
     };
     wss.handleUpgrade(request, socket, head, handleAuth);
 });
-
-// timer port
+// sync port
 server.listen(SYNCPORT, host, () => {
     console.log(`running at '${host}' on port ${SYNCPORT}`);
 });
-// app.get("/", (req, res) => {
-//     res.render("login");
-// });
-// app.post("/login", (req, res) => {
-//     const username = req.body.username;
-//     const password = req.body.password;
-
-//     // 로그인 처리 로직 작성
-//     res.send(`Username: ${username}, Password: ${password}`);
-// });
 
 // // Serve application
 audio_server.listen(SERVER_PORT, () => {
@@ -81,5 +77,4 @@ audio_server.listen(SERVER_PORT, () => {
     console.warn("Application server connecting to OpenVidu at " + OPENVIDU_URL);
     proxy_server();
 });
-
 process.on("uncaughtException", (err) => console.error(err));

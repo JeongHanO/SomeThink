@@ -1,23 +1,81 @@
 [
-    { "username": "Park", "password": "Asdfs" },
     {
-        "username": "walt3",
-        "password": "$2b$10$oKIeOZKtE8IIY6du7ORuCuNLtqU1VIjEER04NZHy6CMxYZZChKB66",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndhbHQzIiwiaWF0IjoxNzA1NjU5MDc4LCJleHAiOjE3MDU3NDU0Nzh9.dQwA3tfYZPgfk4ZZwF-aqw7cS7zhD0CgIbZ5Eqk6WAU"
+        "username": "slstls2",
+        "roles": { "User": 2 },
+        "password": "$2b$10$GlHS7MRdqlxiwD0cZKhehuT9wmb/X6Jlw4vV7mqp/C95cTaNPAgg.",
+        "email": "slstsl2@naver.com"
     },
     {
-        "username": "walt2",
-        "password": "$2b$10$DYXEl0aVY/eeUhCX09aD5.LDpf0QaofNOjPVAzA9sJaVwzxmIz/0.",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndhbHQyIiwiaWF0IjoxNzA1NzcyNTI2LCJleHAiOjE3MDU4NTg5MjZ9.7YTIuVEc24jgOzYG2JP3IuoNM1v2DEfdpLVH09_Yq9M"
+        "username": "park",
+        "roles": { "User": 2 },
+        "password": "$2b$10$m9zHv.bSHzbsB0mGpWyqOe7FiO9GMwNVrynL8Tx.z/UwHAASMTYDa",
+        "email": "kim@naver.com"
     },
     {
-        "username": "walt1",
-        "password": "$2b$10$HA9DLkc80FSJtzXVQqt6kOzAnBrz1RUxkS0lfc8PILgoMJ6brdV6K",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndhbHQxIiwiaWF0IjoxNzA1NzczMDU3LCJleHAiOjE3MDU4NTk0NTd9.K_iwjlFpw6wXxsa7GqKqDKinn7e0T9wLG9k-Z-r5zj4"
+        "username": "her",
+        "roles": { "User": 2 },
+        "password": "$2b$10$qIuCXi.47yhVSMwTu9Vt3.16HUL3zg1Nj2xllCshUbeOctedJily2",
+        "email": "asdf@naver.com"
     },
     {
-        "username": "park do",
-        "password": "$2b$10$1tVfEFt5GYP3Ms58zh9zOeTR7DgNMjVL4./MMjZ6ppHYn1ghAwbrm",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhcmsgZG8iLCJpYXQiOjE3MDU5MDQwMjIsImV4cCI6MTcwNTk5MDQyMn0.BW0ssb8dxnZHWIUReti8Sa6V0lYtgPNw4tkFCqWjt4k"
+        "username": "john_doe",
+        "roles": { "User": 2 },
+        "password": "$2b$10$GAn3vY4rksUCeYLO/rgCTOUlqZN9aRqJ4AInzP0UpDk4ym/3SQzOq",
+        "email": "john_doe@example.com"
+    },
+    {
+        "username": "jane_doe",
+        "roles": { "User": 2 },
+        "password": "$2b$10$h63sC.l98LihmxtG86W6OeQjAZt1z6f.vwnfFqqfSwlOe2vnuDmmO",
+        "email": "jane_doe@example.com"
+    },
+    {
+        "username": "test_user",
+        "roles": { "User": 2 },
+        "password": "$2b$10$WzJc8r.xkxJ96IdM1OGav.CPfoBivS3RMFrEh8p7rVMl1ehKd9om2",
+        "email": "test_user@example.com"
+    },
+    {
+        "username": "foo",
+        "roles": { "User": 2 },
+        "password": "$2b$10$zRLvV7E9RcJqISs0QrqA4upB4kRHjKQXEk2enNnFbQDJpWkwJpg8K",
+        "email": "foo@example.com"
+    },
+    {
+        "username": "bar",
+        "roles": { "User": 2 },
+        "password": "$2b$10$JnSeVpeRlKh21xWfOoVtBu/AHcA6V7PxT10ciY0oTKAKaWZr9qRlC",
+        "email": "bar@example.com"
+    },
+    {
+        "username": "baz",
+        "roles": { "User": 2 },
+        "password": "$2b$10$i.kRS3oY0.wWpMWl/HRnoONFhwZmHgJZc3qotKwG4mU8rtHhE8QZe",
+        "email": "baz@example.com"
+    },
+    {
+        "username": "dummy1",
+        "roles": { "User": 2 },
+        "password": "$2b$10$wclhjJoZzWlPAQXQe/GP4eWIbKBDQ1K47MsJy6dWxOqEoHVOzih2C",
+        "email": "dummy1@example.com"
+    },
+    {
+        "username": "dummy2",
+        "roles": { "User": 2 },
+        "password": "$2b$10$tZp0sYjS.ZgYFXjzBXPUXugX7mBh2A7eCe5C9ABODJtNmAfX/k0aa",
+        "email": "dummy2@example.com"
+    },
+    {
+        "username": "dummy3",
+        "roles": { "User": 2 },
+        "password": "$2b$10$CnvK4l/W9ZaTKgIY6lHkFerLZXMsU9hbu1u2OpkO1GcGhGd8nL2kK",
+        "email": "dummy3@example.com"
+    },
+    {
+        "username": "test1",
+        "roles": { "User": 2 },
+        "password": "$2b$10$GEYKZNQEzwHKSm604lfPYO/RbhjqJdxpw44wMYc6qAde2SlTha5zO",
+        "email": "test1@naver.com",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwiaWF0IjoxNzA5NDAxNzEwLCJleHAiOjE3MDk0ODgxMTB9.JkZ_JR7vuW1TC450DwgQiam_WhIKSuiGPs8Z9IhMUls"
     }
 ]
